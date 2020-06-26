@@ -90,7 +90,7 @@ class Extension extends AbstractPluginIntegration {
 	 */
 	public function register_fields( $fields ) {
 		$fields['pronamic_pay_payment_method'] = new PaymentMethodsField();
-		$fields['pronamic_pay_issuer']         = new IssuersField();
+		//$fields['pronamic_pay_issuer']         = new IssuersField();
 
 		return $fields;
 	}
