@@ -46,7 +46,7 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 	 * Constructor for the payment gateway.
 	 */
 	public function __construct() {
-		$this->_name = __( 'Pronamic Pay', 'pronamic_ideal' );
+		$this->_name = __( 'Knit Pay', 'pronamic_ideal' );
 
 		$this->_settings = $this->action_settings();
 	}

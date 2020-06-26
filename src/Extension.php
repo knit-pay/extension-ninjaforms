@@ -75,7 +75,7 @@ class Extension extends AbstractPluginIntegration {
 	public function field_type_sections( $sections ) {
 		$sections['pronamic_pay'] = array(
 			'id'         => 'pronamic_pay',
-			'nicename'   => __( 'Pronamic Pay', 'pronamic_ideal' ),
+			'nicename'   => __( 'Knit Pay', 'pronamic_ideal' ),
 			'fieldTypes' => array(),
 		);
 
@@ -118,7 +118,7 @@ class Extension extends AbstractPluginIntegration {
 	public function register_settings_groups( $groups ) {
 		$groups['pronamic_pay_status_pages'] = array(
 			'id'       => 'pronamic_pay_status_pages',
-			'label'    => __( 'Pronamic Pay Status Pages', 'pronamic_ideal' ),
+			'label'    => __( 'Knit Pay Status Pages', 'pronamic_ideal' ),
 			'priority' => 200,
 		);
 
