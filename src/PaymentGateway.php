@@ -61,6 +61,9 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 	 */
 	public function process( $action_settings, $form_id, $data ) {
 		$config_id = get_option( 'pronamic_pay_config_id' );
+		if (!empty($action_settings['knit_pay_config_id'])){
+		    $config_id = $action_settings['knit_pay_config_id'];
+		}
 
 		// A valid configuration ID is needed.
 		if ( false === $config_id ) {
@@ -112,6 +115,13 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 	 */
 	public function action_settings() {
 		$settings = array();
+		$payment_configs = Plugin::get_config_select_options();
+		foreach ( $payment_configs as $key => $payment_config ) {
+		    $payment_config_options[] = array(
+		        'label' => $payment_config,
+		        'value' => $key,
+		    );
+		}
 
 		// Description.
 		$settings['description'] = array(
@@ -128,6 +138,26 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 				),
 			),
 		);
+
+		$settings['knit_pay_config_id'] = array(
+		    'name' => 'knit_pay_config_id',
+		    'type'     => 'select',
+		    'group'       => 'primary',
+		    'label'    => __( 'Configuration', 'pronamic_ideal' ),
+		    'options'  => $payment_config_options,
+		    'default'  => get_option( 'pronamic_pay_config_id' ),
+		);
+
+		// User Information Fields
+		$settings['knit_pay_fname'] = $this->add_user_info_action_setting('knit_pay_fname', __( 'First Name', 'knit-pay' ));
+		$settings['knit_pay_lname'] = $this->add_user_info_action_setting('knit_pay_lname', __( 'Last Name', 'knit-pay' ));
+		$settings['knit_pay_phone'] = $this->add_user_info_action_setting('knit_pay_phone', __( 'Phone', 'knit-pay' ));
+		$settings['knit_pay_email'] = $this->add_user_info_action_setting('knit_pay_email', __( 'Email', 'knit-pay' ));
+		$settings['knit_pay_address'] = $this->add_user_info_action_setting('knit_pay_address', __( 'Address', 'knit-pay' ));
+		$settings['knit_pay_city'] = $this->add_user_info_action_setting('knit_pay_city', __( 'City', 'knit-pay' ));
+		$settings['knit_pay_state'] = $this->add_user_info_action_setting('knit_pay_state', __( 'State', 'knit-pay' ));
+		$settings['knit_pay_country'] = $this->add_user_info_action_setting('knit_pay_country', __( 'Country', 'knit-pay' ));
+		$settings['knit_pay_zip'] = $this->add_user_info_action_setting('knit_pay_zip', __( 'Zip', 'knit-pay' ));
 
 		/*
 		 * Status pages.
@@ -161,4 +191,22 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 
 		return $settings;
 	}
+
+	private function add_user_info_action_setting ($name, $label) {
+	    return array(
+	        'name'           => $name,
+	        'type'           => 'textbox',
+	        'group'          => 'knit_pay_user_info',
+	        'label'          => $label,
+	        'placeholder'    => '',
+	        'value'          => '',
+	        'width'          => 'one-half',
+	        'use_merge_tags' => array(
+	            'include' => array(
+	                'calcs',
+	            ),
+	        ),
+	    );
+	}
+
 }

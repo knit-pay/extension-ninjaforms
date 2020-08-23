@@ -201,4 +201,82 @@ class PaymentData extends Pay_PaymentData {
 	public function get_order_id() {
 		return $this->get_source_id();
 	}
+
+	/**
+	 * Get email.
+	 *
+	 * @return string
+	 */
+	public function get_email() {
+	    If(!empty($this->action_settings['knit_pay_email'])){
+	        return $this->action_settings['knit_pay_email'];
+	    }
+	}
+
+	/**
+	 * Get first name.
+	 *
+	 * @return string
+	 */
+	public function get_first_name() {
+	    If(!empty($this->action_settings['knit_pay_fname'])){
+	        return $this->action_settings['knit_pay_fname'];
+	    }
+	}
+
+	/**
+	 * Get last name.
+	 *
+	 * @return string
+	 */
+	public function get_last_name() {
+	    If(!empty($this->action_settings['knit_pay_lname'])){
+	        return $this->action_settings['knit_pay_lname'];
+	    }
+	}
+
+	/**
+	 * Get customer name.
+	 *
+	 * @return string
+	 */
+	public function get_customer_name() {
+	    return $this->action_settings['knit_pay_fname'] . ' ' . $this->action_settings['knit_pay_lname'];
+	}
+
+	/**
+	 * Get address.
+	 *
+	 * @return null|string
+	 */
+	public function get_address() {
+	    return $this->action_settings['knit_pay_address'];
+	}
+
+	/**
+	 * Get city.
+	 *
+	 * @return null|string
+	 */
+	public function get_city() {
+	    return $this->action_settings['knit_pay_city'];
+	}
+
+	/**
+	 * Get ZIP.
+	 *
+	 * @return null|string
+	 */
+	public function get_zip() {
+	    return $this->action_settings['knit_pay_zip'];
+	}
+
+	/**
+	 * Get telephone number.
+	 *
+	 * @return null|string
+	 */
+	public function get_telephone_number() {
+	    return $this->action_settings['knit_pay_phone'];
+	}
 }

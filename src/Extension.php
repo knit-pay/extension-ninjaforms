@@ -122,6 +122,12 @@ class Extension extends AbstractPluginIntegration {
 			'priority' => 200,
 		);
 
+		$groups['knit_pay_user_info'] = array(
+		    'id'       => 'knit_pay_user_info',
+		    'label'    => __( 'User Information Fields', 'knit-pay' ),
+		    'priority' => 150,
+		);
+
 		return $groups;
 	}
 
