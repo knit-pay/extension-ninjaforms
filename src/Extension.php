@@ -174,7 +174,7 @@ class Extension extends AbstractPluginIntegration {
 
 		$groups['knit_pay_user_info'] = array(
 		    'id'       => 'knit_pay_user_info',
-		    'label'    => __( 'User Information Fields', 'knit-pay' ),
+		    'label'    => __( 'Knit Pay User Information Fields', 'knit-pay' ),
 		    'priority' => 150,
 		);
 

@@ -132,6 +132,9 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 			'placeholder'    => '',
 			'value'          => '',
 			'width'          => 'full',
+		    'deps' => array(
+		        'payment_gateways' => 'pronamic_pay',
+		    ),
 			'use_merge_tags' => array(
 				'include' => array(
 					'calcs',
@@ -146,6 +149,9 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 		    'label'    => __( 'Configuration', 'pronamic_ideal' ),
 		    'options'  => $payment_config_options,
 		    'default'  => get_option( 'pronamic_pay_config_id' ),
+		    'deps' => array(
+		        'payment_gateways' => 'pronamic_pay',
+		    ),
 		);
 
 		// User Information Fields
@@ -185,6 +191,9 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 				'placeholder' => '',
 				'value'       => '',
 				'width'       => 'full',
+			    'deps' => array(
+			        'payment_gateways' => 'pronamic_pay',
+			    ),
 				'options'     => $options,
 			);
 		}
@@ -201,6 +210,9 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 	        'placeholder'    => '',
 	        'value'          => '',
 	        'width'          => 'one-half',
+	        'deps' => array(
+	            'payment_gateways' => 'pronamic_pay',
+	        ),
 	        'use_merge_tags' => array(
 	            'include' => array(
 	                'calcs',
