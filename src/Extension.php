@@ -58,6 +58,7 @@ class Extension extends AbstractPluginIntegration {
 
 		\add_filter( 'pronamic_payment_source_url_' . self::SLUG, array( $this, 'source_url' ), 10, 2 );
 		\add_filter( 'pronamic_payment_redirect_url_' . self::SLUG, array( $this, 'redirect_url' ), 10, 2 );
+		\add_action( 'pronamic_payment_status_update_' . self::SLUG, array( $this, 'status_update' ), 10, 1 );
 
 		\add_filter( 'ninja_forms_field_type_sections', array( $this, 'field_type_sections' ) );
 		\add_filter( 'ninja_forms_register_fields', array( $this, 'register_fields' ), 10, 3 );
@@ -118,14 +119,14 @@ class Extension extends AbstractPluginIntegration {
 	    $csv_array[ 0 ][ 0 ][ 'knit_pay_status' ] = __( 'Knit Pay Payment Status', 'knit-pay' );
 	    $csv_array[ 0 ][ 0 ][ 'knit_pay_transaction_id' ] = __( 'Knit Pay Transaction ID', 'knit-pay' );
 	    $csv_array[ 0 ][ 0 ][ 'knit_pay_payment_id' ] = __( 'Knit Pay Payment ID', 'knit-pay' );
-	    $csv_array[ 0 ][ 0 ][ 'knit_pay_amount_received' ] = __( 'Knit Pay Amount Received', 'knit-pay' );
+	    $csv_array[ 0 ][ 0 ][ 'knit_pay_amount' ] = __( 'Knit Pay Amount', 'knit-pay' );
 	    // Add our values.
 	    $i = 0;
 	    foreach( $subs as $sub ) {
 	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_status' ] = $sub->get_extra_value( 'knit_pay_status' );
 	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_transaction_id' ] = $sub->get_extra_value( 'knit_pay_transaction_id' );
 	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_payment_id' ] = $sub->get_extra_value( 'knit_pay_payment_id' );
-	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_amount_received' ] = $sub->get_extra_value( 'knit_pay_amount_received' );
+	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_amount' ] = $sub->get_extra_value( 'knit_pay_amount' );
 	        $i++;
 	    }
 	    return $csv_array;
@@ -181,6 +182,21 @@ class Extension extends AbstractPluginIntegration {
 		return $groups;
 	}
 
+	public function status_update( Payment $payment ) {
+	    $form_id   = $payment->get_meta( 'ninjaforms_payment_form_id' );
+
+	    if ( empty( $form_id ) ) {
+	        return;
+	    }
+
+	    $submission = Ninja_Forms()->form($form_id)->sub($payment->get_order_id())->get();
+	    $submission->update_extra_value('knit_pay_transaction_id', $payment->get_transaction_id());
+	    $submission->update_extra_value('knit_pay_status', $payment->status);
+	    $submission->update_extra_value('knit_pay_payment_id', $payment->get_id());
+	    $submission->update_extra_value('knit_pay_amount', $payment->get_total_amount()->get_value());
+	    $submission->save();
+	}
+
 	/**
 	 * Payment redirect URL filter.
 	 *
@@ -199,13 +215,6 @@ class Extension extends AbstractPluginIntegration {
 		}
 
 		$action_settings = Ninja_Forms()->form( $form_id )->get_action( $action_id )->get_settings();
-
-		$submission = Ninja_Forms()->form($form_id)->sub($payment->get_order_id())->get();
-		$submission->update_extra_value('knit_pay_transaction_id', $payment->get_transaction_id());
-		$submission->update_extra_value('knit_pay_status', $payment->status);
-		$submission->update_extra_value('knit_pay_payment_id', $payment->get_id());
-		$submission->update_extra_value('knit_pay_amount_received', $payment->get_total_amount()->get_value());
-		$submission->save();
 
 		$status_url = null;
 

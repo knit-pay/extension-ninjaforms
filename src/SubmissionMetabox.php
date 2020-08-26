@@ -47,13 +47,13 @@ final class SubmissionMetabox extends NF_Abstracts_SubmissionMetabox
             echo "</dd>";
         }
         
-        if( $this->sub->get_extra_value( 'knit_pay_amount_received' ) ) {
+        if( $this->sub->get_extra_value( 'knit_pay_amount' ) ) {
             echo "<dt>";
-            echo __( "Knit Pay Amount Received", 'knit-pay' );
+            echo __( "Knit Pay Amount", 'knit-pay' );
             echo "</dt>";
             
             echo "<dd>";
-            echo $this->sub->get_extra_value( 'knit_pay_amount_received' );
+            echo $this->sub->get_extra_value( 'knit_pay_amount' );
             echo "</dd>";
         }
 
