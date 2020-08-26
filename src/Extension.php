@@ -63,6 +63,13 @@ class Extension extends AbstractPluginIntegration {
 		\add_filter( 'ninja_forms_register_fields', array( $this, 'register_fields' ), 10, 3 );
 		\add_filter( 'ninja_forms_register_payment_gateways', array( $this, 'register_payment_gateways' ), 10, 1 );
 		\add_filter( 'ninja_forms_field_settings_groups', array( $this, 'register_settings_groups' ) );
+
+		// Export Payment Details Functionality
+		add_filter( 'nf_subs_csv_extra_values', array( $this, 'export_transaction_data' ), 10, 3 );
+
+		// Show Payment Details on Submission Page
+		require_once 'SubmissionMetabox.php';
+		new SubmissionMetabox();
 	}
 
 	/**
@@ -80,6 +87,49 @@ class Extension extends AbstractPluginIntegration {
 		);
 
 		return $sections;
+	}
+
+	/**
+	 * Hook Into Submission Exports.
+	 *
+	 *
+	 * @param array $csv_array
+	 * @param array $subs
+	 * @param int $form_id
+	 * @return array
+	 */
+	public function export_transaction_data( $csv_array, $subs, $form_id )
+	{
+	    $add_transactions = false;
+	    $actions = Ninja_Forms()->form($form_id)->get_actions();
+	    // Loop over our actions to see if Knit Pay exists.
+	    foreach( $actions as $action ) {
+	        $settings = $action->get_settings();
+	        if( in_array( $settings[ 'type' ], array( 'collectpayment', 'pronamic_pay') )
+	            && 'pronamic_pay' == $settings[ 'payment_gateways' ] ) {
+	                $add_transactions = true;
+	            }
+	    }
+
+	    // If we didn't find a Knit Pay action, bail.
+	    if( ! $add_transactions ) return $csv_array;
+
+	    // Add our labels.
+	    $csv_array[ 0 ][ 0 ][ 'knit_pay_status' ] = __( 'Knit Pay Payment Status', 'knit-pay' );
+	    $csv_array[ 0 ][ 0 ][ 'knit_pay_transaction_id' ] = __( 'Knit Pay Transaction ID', 'knit-pay' );
+	    $csv_array[ 0 ][ 0 ][ 'knit_pay_payment_id' ] = __( 'Knit Pay Payment ID', 'knit-pay' );
+	    $csv_array[ 0 ][ 0 ][ 'knit_pay_amount_received' ] = __( 'Knit Pay Amount Received', 'knit-pay' );
+	    // Add our values.
+	    $i = 0;
+	    foreach( $subs as $sub ) {
+	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_status' ] = $sub->get_extra_value( 'knit_pay_status' );
+	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_transaction_id' ] = $sub->get_extra_value( 'knit_pay_transaction_id' );
+	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_payment_id' ] = $sub->get_extra_value( 'knit_pay_payment_id' );
+	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_amount_received' ] = $sub->get_extra_value( 'knit_pay_amount_received' );
+	        $i++;
+	    }
+	    return $csv_array;
+
 	}
 
 	/**
@@ -149,6 +199,13 @@ class Extension extends AbstractPluginIntegration {
 		}
 
 		$action_settings = Ninja_Forms()->form( $form_id )->get_action( $action_id )->get_settings();
+
+		$submission = Ninja_Forms()->form($form_id)->sub($payment->get_order_id())->get();
+		$submission->update_extra_value('knit_pay_transaction_id', $payment->get_transaction_id());
+		$submission->update_extra_value('knit_pay_status', $payment->status);
+		$submission->update_extra_value('knit_pay_payment_id', $payment->get_id());
+		$submission->update_extra_value('knit_pay_amount_received', $payment->get_total_amount()->get_value());
+		$submission->save();
 
 		$status_url = null;
 
