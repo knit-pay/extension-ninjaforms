@@ -289,13 +289,13 @@ class PaymentData extends Pay_PaymentData {
 	 * @return Subscription|null
 	 */
 	public function get_subscription() {
-	    if ('0' === $this->action_settings['knit_pay_frequency']) {
+	    if (empty($this->action_settings['knit_pay_frequency']) || empty($this->action_settings['knit_pay_interval'])) {
 	        return;
 	    }
 
 	    $interval_period = $this->action_settings['knit_pay_interval_period'];
 
-	    if ('0' === $interval_period) {
+	    if (empty($interval_period)) {
 	        foreach ( $this->form_data['fields'] as $field ) {
 	            if ( 'knit_pay_recurring_interval_period' !== $field['type'] ) {
 	                continue;

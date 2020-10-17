@@ -252,7 +252,7 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 	    return array(
 	        'name'           => $name,
 	        'type'           => 'textbox',
-	        'group'          => 'knit_pay_user_info',
+	        'group'          => $group,
 	        'label'          => $label,
 	        'placeholder'    => '',
 	        'value'          => '',
