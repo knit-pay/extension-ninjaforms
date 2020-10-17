@@ -141,6 +141,7 @@ class Extension extends AbstractPluginIntegration {
 	 */
 	public function register_fields( $fields ) {
 		$fields['pronamic_pay_payment_method'] = new PaymentMethodsField();
+		$fields['knit_pay_recurring_interval_period'] = new RecurringIntervalPeriodField();
 		//$fields['pronamic_pay_issuer']         = new IssuersField();
 
 		return $fields;
@@ -177,6 +178,12 @@ class Extension extends AbstractPluginIntegration {
 		    'id'       => 'knit_pay_user_info',
 		    'label'    => __( 'Knit Pay User Information Fields', 'knit-pay' ),
 		    'priority' => 150,
+		);
+
+		$groups['knit_pay_recurring_settings'] = array(
+		    'id'       => 'knit_pay_recurring_settings',
+		    'label'    => __( 'Knit Pay Recurring Payment Settings', 'knit-pay' ),
+		    'priority' => 175,
 		);
 
 		return $groups;

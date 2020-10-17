@@ -169,6 +169,11 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 		$settings['knit_pay_country'] = $this->add_user_info_action_setting('knit_pay_country', __( 'Country', 'knit-pay' ));
 		$settings['knit_pay_zip'] = $this->add_user_info_action_setting('knit_pay_zip', __( 'Zip', 'knit-pay' ));
 
+		// Recurring Payment Settings
+		$settings['knit_pay_interval'] = $this->add_action_setting('knit_pay_interval', __( 'Payment Repeats Every', 'knit-pay' ), 'knit_pay_recurring_settings');
+		$settings['knit_pay_interval_period'] = $this->add_interval_period_setting();
+		$settings['knit_pay_frequency'] = $this->add_action_setting('knit_pay_frequency', __( 'Payment Count', 'knit-pay' ), 'knit_pay_recurring_settings');
+
 		/*
 		 * Status pages.
 		 */
@@ -206,6 +211,44 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 	}
 
 	private function add_user_info_action_setting ($name, $label) {
+	    return $this->add_action_setting($name, $label, 'knit_pay_user_info');
+	}
+
+	private function add_interval_period_setting () {
+	    return array(
+	        'name' => 'knit_pay_interval_period',
+	        'type' => 'select',
+	        'label' => esc_html__( 'Payment Frequency', 'knit-pay' ),
+	        'width' => 'one-half',
+	        'group' => 'knit_pay_recurring_settings',
+	        'deps' => array(
+	            'payment_gateways' => 'pronamic_pay',
+	        ),
+	        'default_options' => array(
+	            'label' => esc_html__( 'Interval Period Form Field', 'ninja-forms' ),
+	            'value' => '0',
+	        ),
+	        'options'  => array(
+	            array(
+	                'value' => 0,
+	                'label' => esc_html__( 'Value from Interval Period Form Field', 'knit-pay' ),
+	            ),array(
+	                'value' => 'D'  ,
+	                'label' => __( 'Daily', 'pronamic_ideal' ),
+	            ),array(
+	                'value' => 'W' ,
+	                'label'=> __( 'Weekly', 'pronamic_ideal' ),
+	            ),array(
+	                'value' =>  'M' ,
+	                'label'=> __( 'Monthly', 'pronamic_ideal' ),
+	            ),array(
+	                'value' =>  'Y' ,
+	                'label'=> __( 'Yearly', 'pronamic_ideal' ),
+	            )),
+	    );
+	}
+
+	private function add_action_setting($name, $label, $group) {
 	    return array(
 	        'name'           => $name,
 	        'type'           => 'textbox',

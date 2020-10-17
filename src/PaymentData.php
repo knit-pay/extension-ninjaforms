@@ -13,6 +13,8 @@ namespace Pronamic\WordPress\Pay\Extensions\NinjaForms;
 use Pronamic\WordPress\Pay\Payments\PaymentData as Pay_PaymentData;
 use Pronamic\WordPress\Pay\Payments\Item;
 use Pronamic\WordPress\Pay\Payments\Items;
+use Pronamic\WordPress\Pay\Subscriptions\Subscription;
+
 
 /**
  * Payment data
@@ -278,5 +280,46 @@ class PaymentData extends Pay_PaymentData {
 	 */
 	public function get_telephone_number() {
 	    return $this->action_settings['knit_pay_phone'];
+	}
+
+	/**
+	 * Get subscription.
+	 *
+	 * @since 2.3.2
+	 * @return Subscription|null
+	 */
+	public function get_subscription() {
+	    if ('0' === $this->action_settings['knit_pay_frequency']) {
+	        return;
+	    }
+
+	    $interval_period = $this->action_settings['knit_pay_interval_period'];
+
+	    if ('0' === $interval_period) {
+	        foreach ( $this->form_data['fields'] as $field ) {
+	            if ( 'knit_pay_recurring_interval_period' !== $field['type'] ) {
+	                continue;
+	            }
+
+	            $interval_period = $field['value'];
+
+	            if ( empty( $interval_period ) ) {
+	                return;
+	            }
+	            break;
+	        }
+	        return;
+	    }
+
+	    // Subscription.
+	    $subscription = new Subscription();
+
+	    $subscription->description     = $this->get_description();
+	    $subscription->frequency       = $this->action_settings['knit_pay_frequency'];
+	    $subscription->interval        = $this->action_settings['knit_pay_interval'];
+	    $subscription->interval_period = $interval_period;
+	    $subscription->set_total_amount( $this->get_amount() );
+
+	    return $subscription;
 	}
 }
