@@ -93,43 +93,43 @@ class Extension extends AbstractPluginIntegration {
 	/**
 	 * Hook Into Submission Exports.
 	 *
-	 *
 	 * @param array $csv_array
 	 * @param array $subs
-	 * @param int $form_id
+	 * @param int   $form_id
 	 * @return array
 	 */
-	public function export_transaction_data( $csv_array, $subs, $form_id )
-	{
-	    $add_transactions = false;
-	    $actions = Ninja_Forms()->form($form_id)->get_actions();
-	    // Loop over our actions to see if Knit Pay exists.
-	    foreach( $actions as $action ) {
-	        $settings = $action->get_settings();
-	        if( in_array( $settings[ 'type' ], array( 'collectpayment', 'pronamic_pay') )
-	            && 'pronamic_pay' == $settings[ 'payment_gateways' ] ) {
-	                $add_transactions = true;
-	            }
-	    }
+	public function export_transaction_data( $csv_array, $subs, $form_id ) {
+		$add_transactions = false;
+		$actions          = Ninja_Forms()->form( $form_id )->get_actions();
+		// Loop over our actions to see if Knit Pay exists.
+		foreach ( $actions as $action ) {
+			$settings = $action->get_settings();
+			if ( in_array( $settings['type'], array( 'collectpayment', 'pronamic_pay' ) )
+				&& 'pronamic_pay' == $settings['payment_gateways'] ) {
+					$add_transactions = true;
+			}
+		}
 
-	    // If we didn't find a Knit Pay action, bail.
-	    if( ! $add_transactions ) return $csv_array;
+		// If we didn't find a Knit Pay action, bail.
+		if ( ! $add_transactions ) {
+			return $csv_array;
+		}
 
-	    // Add our labels.
-	    $csv_array[ 0 ][ 0 ][ 'knit_pay_status' ] = __( 'Knit Pay Payment Status', 'knit-pay' );
-	    $csv_array[ 0 ][ 0 ][ 'knit_pay_transaction_id' ] = __( 'Knit Pay Transaction ID', 'knit-pay' );
-	    $csv_array[ 0 ][ 0 ][ 'knit_pay_payment_id' ] = __( 'Knit Pay Payment ID', 'knit-pay' );
-	    $csv_array[ 0 ][ 0 ][ 'knit_pay_amount' ] = __( 'Knit Pay Amount', 'knit-pay' );
-	    // Add our values.
-	    $i = 0;
-	    foreach( $subs as $sub ) {
-	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_status' ] = $sub->get_extra_value( 'knit_pay_status' );
-	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_transaction_id' ] = $sub->get_extra_value( 'knit_pay_transaction_id' );
-	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_payment_id' ] = $sub->get_extra_value( 'knit_pay_payment_id' );
-	        $csv_array[ 1 ][ 0 ][ $i ][ 'knit_pay_amount' ] = $sub->get_extra_value( 'knit_pay_amount' );
-	        $i++;
-	    }
-	    return $csv_array;
+		// Add our labels.
+		$csv_array[0][0]['knit_pay_status']         = __( 'Knit Pay Payment Status', 'knit-pay' );
+		$csv_array[0][0]['knit_pay_transaction_id'] = __( 'Knit Pay Transaction ID', 'knit-pay' );
+		$csv_array[0][0]['knit_pay_payment_id']     = __( 'Knit Pay Payment ID', 'knit-pay' );
+		$csv_array[0][0]['knit_pay_amount']         = __( 'Knit Pay Amount', 'knit-pay' );
+		// Add our values.
+		$i = 0;
+		foreach ( $subs as $sub ) {
+			$csv_array[1][0][ $i ]['knit_pay_status']         = $sub->get_extra_value( 'knit_pay_status' );
+			$csv_array[1][0][ $i ]['knit_pay_transaction_id'] = $sub->get_extra_value( 'knit_pay_transaction_id' );
+			$csv_array[1][0][ $i ]['knit_pay_payment_id']     = $sub->get_extra_value( 'knit_pay_payment_id' );
+			$csv_array[1][0][ $i ]['knit_pay_amount']         = $sub->get_extra_value( 'knit_pay_amount' );
+			$i++;
+		}
+		return $csv_array;
 
 	}
 
@@ -140,9 +140,9 @@ class Extension extends AbstractPluginIntegration {
 	 * @return array $fields
 	 */
 	public function register_fields( $fields ) {
-		$fields['pronamic_pay_payment_method'] = new PaymentMethodsField();
+		$fields['pronamic_pay_payment_method']        = new PaymentMethodsField();
 		$fields['knit_pay_recurring_interval_period'] = new RecurringIntervalPeriodField();
-		//$fields['pronamic_pay_issuer']         = new IssuersField();
+		// $fields['pronamic_pay_issuer']         = new IssuersField();
 
 		return $fields;
 	}
@@ -175,33 +175,33 @@ class Extension extends AbstractPluginIntegration {
 		);
 
 		$groups['knit_pay_user_info'] = array(
-		    'id'       => 'knit_pay_user_info',
-		    'label'    => __( 'Knit Pay User Information Fields', 'knit-pay' ),
-		    'priority' => 150,
+			'id'       => 'knit_pay_user_info',
+			'label'    => __( 'Knit Pay User Information Fields', 'knit-pay' ),
+			'priority' => 150,
 		);
 
 		$groups['knit_pay_recurring_settings'] = array(
-		    'id'       => 'knit_pay_recurring_settings',
-		    'label'    => __( 'Knit Pay Recurring Payment Settings', 'knit-pay' ),
-		    'priority' => 175,
+			'id'       => 'knit_pay_recurring_settings',
+			'label'    => __( 'Knit Pay Recurring Payment Settings', 'knit-pay' ),
+			'priority' => 175,
 		);
 
 		return $groups;
 	}
 
 	public function status_update( Payment $payment ) {
-	    $form_id   = $payment->get_meta( 'ninjaforms_payment_form_id' );
+		$form_id = $payment->get_meta( 'ninjaforms_payment_form_id' );
 
-	    if ( empty( $form_id ) ) {
-	        return;
-	    }
+		if ( empty( $form_id ) ) {
+			return;
+		}
 
-	    $submission = Ninja_Forms()->form($form_id)->sub($payment->get_order_id())->get();
-	    $submission->update_extra_value('knit_pay_transaction_id', $payment->get_transaction_id());
-	    $submission->update_extra_value('knit_pay_status', $payment->status);
-	    $submission->update_extra_value('knit_pay_payment_id', $payment->get_id());
-	    $submission->update_extra_value('knit_pay_amount', $payment->get_total_amount()->get_value());
-	    $submission->save();
+		$submission = Ninja_Forms()->form( $form_id )->sub( $payment->get_order_id() )->get();
+		$submission->update_extra_value( 'knit_pay_transaction_id', $payment->get_transaction_id() );
+		$submission->update_extra_value( 'knit_pay_status', $payment->status );
+		$submission->update_extra_value( 'knit_pay_payment_id', $payment->get_id() );
+		$submission->update_extra_value( 'knit_pay_amount', $payment->get_total_amount()->get_value() );
+		$submission->save();
 	}
 
 	/**

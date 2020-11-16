@@ -105,10 +105,10 @@ class RecurringIntervalPeriodField extends NF_Abstracts_List {
 		$order = 0;
 
 		$list_options = array(
-		    'D' => __( 'Daily', 'pronamic_ideal' ),
-		    'W' => __( 'Weekly', 'pronamic_ideal' ),
-		    'M' => __( 'Monthly', 'pronamic_ideal' ),
-		    'Y' => __( 'Yearly', 'pronamic_ideal' ),
+			'D' => __( 'Daily', 'pronamic_ideal' ),
+			'W' => __( 'Weekly', 'pronamic_ideal' ),
+			'M' => __( 'Monthly', 'pronamic_ideal' ),
+			'Y' => __( 'Yearly', 'pronamic_ideal' ),
 		);
 
 		foreach ( $list_options as $value => $label ) {

@@ -210,9 +210,9 @@ class PaymentData extends Pay_PaymentData {
 	 * @return string
 	 */
 	public function get_email() {
-	    If(!empty($this->action_settings['knit_pay_email'])){
-	        return $this->action_settings['knit_pay_email'];
-	    }
+		if ( ! empty( $this->action_settings['knit_pay_email'] ) ) {
+			return $this->action_settings['knit_pay_email'];
+		}
 	}
 
 	/**
@@ -221,9 +221,9 @@ class PaymentData extends Pay_PaymentData {
 	 * @return string
 	 */
 	public function get_first_name() {
-	    If(!empty($this->action_settings['knit_pay_fname'])){
-	        return $this->action_settings['knit_pay_fname'];
-	    }
+		if ( ! empty( $this->action_settings['knit_pay_fname'] ) ) {
+			return $this->action_settings['knit_pay_fname'];
+		}
 	}
 
 	/**
@@ -232,9 +232,9 @@ class PaymentData extends Pay_PaymentData {
 	 * @return string
 	 */
 	public function get_last_name() {
-	    If(!empty($this->action_settings['knit_pay_lname'])){
-	        return $this->action_settings['knit_pay_lname'];
-	    }
+		if ( ! empty( $this->action_settings['knit_pay_lname'] ) ) {
+			return $this->action_settings['knit_pay_lname'];
+		}
 	}
 
 	/**
@@ -243,7 +243,7 @@ class PaymentData extends Pay_PaymentData {
 	 * @return string
 	 */
 	public function get_customer_name() {
-	    return $this->action_settings['knit_pay_fname'] . ' ' . $this->action_settings['knit_pay_lname'];
+		return $this->action_settings['knit_pay_fname'] . ' ' . $this->action_settings['knit_pay_lname'];
 	}
 
 	/**
@@ -252,7 +252,7 @@ class PaymentData extends Pay_PaymentData {
 	 * @return null|string
 	 */
 	public function get_address() {
-	    return $this->action_settings['knit_pay_address'];
+		return $this->action_settings['knit_pay_address'];
 	}
 
 	/**
@@ -261,7 +261,7 @@ class PaymentData extends Pay_PaymentData {
 	 * @return null|string
 	 */
 	public function get_city() {
-	    return $this->action_settings['knit_pay_city'];
+		return $this->action_settings['knit_pay_city'];
 	}
 
 	/**
@@ -270,7 +270,7 @@ class PaymentData extends Pay_PaymentData {
 	 * @return null|string
 	 */
 	public function get_zip() {
-	    return $this->action_settings['knit_pay_zip'];
+		return $this->action_settings['knit_pay_zip'];
 	}
 
 	/**
@@ -279,7 +279,7 @@ class PaymentData extends Pay_PaymentData {
 	 * @return null|string
 	 */
 	public function get_telephone_number() {
-	    return $this->action_settings['knit_pay_phone'];
+		return $this->action_settings['knit_pay_phone'];
 	}
 
 	/**
@@ -289,37 +289,37 @@ class PaymentData extends Pay_PaymentData {
 	 * @return Subscription|null
 	 */
 	public function get_subscription() {
-	    if (empty($this->action_settings['knit_pay_frequency']) || empty($this->action_settings['knit_pay_interval'])) {
-	        return;
-	    }
+		if ( empty( $this->action_settings['knit_pay_frequency'] ) || empty( $this->action_settings['knit_pay_interval'] ) ) {
+			return;
+		}
 
-	    $interval_period = $this->action_settings['knit_pay_interval_period'];
+		$interval_period = $this->action_settings['knit_pay_interval_period'];
 
-	    if (empty($interval_period)) {
-	        foreach ( $this->form_data['fields'] as $field ) {
-	            if ( 'knit_pay_recurring_interval_period' !== $field['type'] ) {
-	                continue;
-	            }
+		if ( empty( $interval_period ) ) {
+			foreach ( $this->form_data['fields'] as $field ) {
+				if ( 'knit_pay_recurring_interval_period' !== $field['type'] ) {
+					continue;
+				}
 
-	            $interval_period = $field['value'];
+				$interval_period = $field['value'];
 
-	            if ( empty( $interval_period ) ) {
-	                return;
-	            }
-	            break;
-	        }
-	        return;
-	    }
+				if ( empty( $interval_period ) ) {
+					return;
+				}
+				break;
+			}
+			return;
+		}
 
-	    // Subscription.
-	    $subscription = new Subscription();
+		// Subscription.
+		$subscription = new Subscription();
 
-	    $subscription->description     = $this->get_description();
-	    $subscription->frequency       = $this->action_settings['knit_pay_frequency'];
-	    $subscription->interval        = $this->action_settings['knit_pay_interval'];
-	    $subscription->interval_period = $interval_period;
-	    $subscription->set_total_amount( $this->get_amount() );
+		$subscription->description     = $this->get_description();
+		$subscription->frequency       = $this->action_settings['knit_pay_frequency'];
+		$subscription->interval        = $this->action_settings['knit_pay_interval'];
+		$subscription->interval_period = $interval_period;
+		$subscription->set_total_amount( $this->get_amount() );
 
-	    return $subscription;
+		return $subscription;
 	}
 }
