@@ -14,6 +14,9 @@ use Pronamic\WordPress\Pay\Payments\PaymentData as Pay_PaymentData;
 use Pronamic\WordPress\Pay\Payments\Item;
 use Pronamic\WordPress\Pay\Payments\Items;
 use Pronamic\WordPress\Pay\Subscriptions\Subscription;
+use Pronamic\WordPress\Pay\Subscriptions\SubscriptionInterval;
+use Pronamic\WordPress\Pay\Subscriptions\SubscriptionPhase;
+use Pronamic\WordPress\Pay\Core\Util;
 
 
 /**
@@ -294,6 +297,8 @@ class PaymentData extends Pay_PaymentData {
 		}
 
 		$interval_period = $this->action_settings['knit_pay_interval_period'];
+		$interval        = $this->action_settings['knit_pay_interval'];
+		$frequency       = $this->action_settings['knit_pay_frequency'];
 
 		if ( empty( $interval_period ) ) {
 			foreach ( $this->form_data['fields'] as $field ) {
@@ -314,11 +319,19 @@ class PaymentData extends Pay_PaymentData {
 		// Subscription.
 		$subscription = new Subscription();
 
-		$subscription->description     = $this->get_description();
-		$subscription->frequency       = $this->action_settings['knit_pay_frequency'];
-		$subscription->interval        = $this->action_settings['knit_pay_interval'];
-		$subscription->interval_period = $interval_period;
-		$subscription->set_total_amount( $this->get_amount() );
+		$subscription->description = $this->get_description();
+
+		// Phase.
+		$phase = new SubscriptionPhase(
+			$subscription,
+			new \DateTimeImmutable(),
+			new SubscriptionInterval( 'P' . $interval . Util::to_period( $interval_period ) ),
+			$this->get_amount()
+		);
+
+		$phase->set_total_periods( $frequency );
+
+		$subscription->add_phase( $phase );
 
 		return $subscription;
 	}
