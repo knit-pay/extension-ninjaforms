@@ -177,13 +177,13 @@ class Extension extends AbstractPluginIntegration {
 		$groups['knit_pay_user_info'] = array(
 			'id'       => 'knit_pay_user_info',
 			'label'    => __( 'Knit Pay User Information Fields', 'knit-pay' ),
-			'priority' => 150,
+			'priority' => 250,
 		);
 
 		$groups['knit_pay_recurring_settings'] = array(
 			'id'       => 'knit_pay_recurring_settings',
 			'label'    => __( 'Knit Pay Recurring Payment Settings', 'knit-pay' ),
-			'priority' => 175,
+			'priority' => 300,
 		);
 
 		return $groups;

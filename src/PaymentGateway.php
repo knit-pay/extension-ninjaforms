@@ -202,9 +202,6 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 			'placeholder'    => '',
 			'value'          => '',
 			'width'          => 'full',
-			'deps'           => array(
-				'payment_gateways' => 'pronamic_pay',
-			),
 			'use_merge_tags' => array(
 				'include' => array(
 					'calcs',
@@ -263,9 +260,6 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 				'placeholder' => '',
 				'value'       => '',
 				'width'       => 'full',
-				'deps'        => array(
-					'payment_gateways' => 'pronamic_pay',
-				),
 				'options'     => $options,
 			);
 		}
