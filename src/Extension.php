@@ -3,7 +3,7 @@
  * Extension
  *
  * @author    Pronamic <info@pronamic.eu>
- * @copyright 2005-2020 Pronamic
+ * @copyright 2005-2021 Pronamic
  * @license   GPL-3.0-or-later
  * @package   Pronamic\WordPress\Pay\Extensions\NinjaForms
  */
@@ -17,7 +17,7 @@ use Pronamic\WordPress\Pay\Payments\PaymentStatus;
 /**
  * Extension
  *
- * @version 1.0.1
+ * @version 1.3.0
  * @since   1.0.0
  */
 class Extension extends AbstractPluginIntegration {
@@ -168,9 +168,9 @@ class Extension extends AbstractPluginIntegration {
 	 * @return array
 	 */
 	public function register_settings_groups( $groups ) {
-		$groups['pronamic_pay_status_pages'] = array(
-			'id'       => 'pronamic_pay_status_pages',
-			'label'    => __( 'Knit Pay Status Pages', 'pronamic_ideal' ),
+		$groups['pronamic_pay'] = array(
+			'id'       => 'pronamic_pay',
+			'label'    => __( 'Pronamic Pay', 'pronamic_ideal' ),
 			'priority' => 200,
 		);
 
@@ -227,24 +227,24 @@ class Extension extends AbstractPluginIntegration {
 
 		switch ( $payment->status ) {
 			case PaymentStatus::CANCELLED:
-				$status_url = \get_permalink( $action_settings['pronamic_pay_cancel_page_id'] );
+				$status_url = NinjaFormsHelper::get_page_link_from_action_settings( $action_settings, 'pronamic_pay_cancel_page_id' );
 
 				break;
 			case PaymentStatus::EXPIRED:
-				$status_url = \get_permalink( $action_settings['pronamic_pay_expired_page_id'] );
+				$status_url = NinjaFormsHelper::get_page_link_from_action_settings( $action_settings, 'pronamic_pay_expired_page_id' );
 
 				break;
 			case PaymentStatus::FAILURE:
-				$status_url = \get_permalink( $action_settings['pronamic_pay_error_page_id'] );
+				$status_url = NinjaFormsHelper::get_page_link_from_action_settings( $action_settings, 'pronamic_pay_error_page_id' );
 
 				break;
 			case PaymentStatus::SUCCESS:
-				$status_url = \get_permalink( $action_settings['pronamic_pay_completed_page_id'] );
+				$status_url = NinjaFormsHelper::get_page_link_from_action_settings( $action_settings, 'pronamic_pay_completed_page_id' );
 
 				break;
 			case PaymentStatus::OPEN:
 			default:
-				$status_url = \get_permalink( $action_settings['pronamic_pay_unknown_page_id'] );
+				$status_url = NinjaFormsHelper::get_page_link_from_action_settings( $action_settings, 'pronamic_pay_unknown_page_id' );
 
 				break;
 		}
@@ -316,7 +316,7 @@ class Extension extends AbstractPluginIntegration {
 					),
 					admin_url( 'post.php' )
 				),
-				/* translators: %s: payment source id */
+				/* translators: %s: source id */
 				sprintf( __( 'Entry #%s', 'pronamic_ideal' ), $source_id )
 			);
 		} else {

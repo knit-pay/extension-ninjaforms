@@ -3,7 +3,7 @@
  * Payment gateway
  *
  * @author    Pronamic <info@pronamic.eu>
- * @copyright 2005-2020 Pronamic
+ * @copyright 2005-2021 Pronamic
  * @license   GPL-3.0-or-later
  * @package   Pronamic\WordPress\Pay\Extensions\NinjaForms
  */
@@ -11,13 +11,16 @@
 namespace Pronamic\WordPress\Pay\Extensions\NinjaForms;
 
 use NF_Abstracts_PaymentGateway;
+use Pronamic\WordPress\Money\Currency;
+use Pronamic\WordPress\Money\TaxedMoney;
 use Pronamic\WordPress\Pay\Plugin;
 use Pronamic\WordPress\Pay\Core\PaymentMethods;
+use Pronamic\WordPress\Pay\Payments\Payment;
 
 /**
  * Payment gateway
  *
- * @version 1.0.3
+ * @version 1.3.0
  * @since   1.0.0
  */
 final class PaymentGateway extends NF_Abstracts_PaymentGateway {
@@ -62,38 +65,66 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 	 * @return array|bool
 	 */
 	public function process( $action_settings, $form_id, $data ) {
-		$config_id = get_option( 'pronamic_pay_config_id' );
-		if ( ! empty( $action_settings['knit_pay_config_id'] ) ) {
-			$config_id = $action_settings['knit_pay_config_id'];
-		}
-
-		// A valid configuration ID is needed.
-		if ( false === $config_id ) {
-			return false;
-		}
-
-		$payment_data = new PaymentData( $action_settings, $form_id, $data );
-
-		$payment_method = $payment_data->get_payment_method();
-
-		$gateway = Plugin::get_gateway( $config_id );
+		// Gateway.
+		$config_id = NinjaFormsHelper::get_config_id_from_action_settings( $action_settings );
+		$gateway   = Plugin::get_gateway( $config_id );
 
 		if ( ! $gateway ) {
 			return false;
 		}
 
-		// Set default payment method if neccessary.
-		if ( empty( $payment_method ) && ( null !== $payment_data->get_issuer() || $gateway->payment_method_is_required() ) ) {
-			$payment_method = PaymentMethods::IDEAL;
+		/**
+		 * Build payment.
+		 */
+		$payment = new Payment();
+
+		$payment->source    = 'ninja-forms';
+		$payment->source_id = NinjaFormsHelper::get_source_id_from_submission_data( $data );
+		$payment->order_id  = $payment->source_id;
+
+		$payment->description = NinjaFormsHelper::get_description_from_action_settings( $action_settings );
+
+		if ( empty( $payment->description ) ) {
+			$payment->description = sprintf(
+				'%s #%s',
+				__( 'Submission', 'pronamic_ideal' ),
+				$payment->source_id
+			);
+		}
+
+		$payment->title = sprintf(
+			/* translators: %s: payment data title */
+			__( 'Payment for %s', 'pronamic_ideal' ),
+			$payment->description
+		);
+
+		// Currency.
+		$currency = Currency::get_instance( NinjaFormsHelper::get_currency_from_form_id( $form_id ) );
+
+		// Amount.
+		$payment->set_total_amount( new TaxedMoney( $action_settings['payment_total'], $currency ) );
+
+		// Method.
+		$payment->method = NinjaFormsHelper::get_payment_method_from_submission_data( $data );
+
+		// Issuer.
+		$payment->issuer = NinjaFormsHelper::get_issuer_from_submission_data( $data );
+
+		// Configuration.
+		$payment->config_id = $config_id;
+
+		// Set default payment method if necessary.
+		if ( empty( $payment->method ) && ( null !== $payment->issuer || $gateway->payment_method_is_required() ) ) {
+			$payment->method = PaymentMethods::IDEAL;
 		}
 
 		// Only start payments for known/active payment methods.
-		if ( is_string( $payment_method ) && ! PaymentMethods::is_active( $payment_method ) ) {
+		if ( is_string( $payment->method ) && ! PaymentMethods::is_active( $payment->method ) ) {
 			return false;
 		}
 
 		try {
-			$payment = Plugin::start( $config_id, $gateway, $payment_data, $payment_method );
+			$payment = Plugin::start_payment( $payment );
 
 			// Save form and action ID in payment meta for use in redirect URL.
 			$payment->set_meta( 'ninjaforms_payment_action_id', $action_settings['id'] );
@@ -133,11 +164,28 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 			);
 		}
 
+		// Configuration.
+		$settings['config_id'] = array(
+			'label'   => __( 'Configuration', 'pronamic_ideal' ),
+			'name'    => 'pronamic_pay_config_id',
+			'group'   => 'pronamic_pay',
+			'type'    => 'select',
+			'width'   => 'full',
+			'options' => array(),
+		);
+
+		foreach ( Plugin::get_config_select_options() as $value => $label ) {
+			$settings['config_id']['options'][] = array(
+				'label' => $label,
+				'value' => $value,
+			);
+		}
+
 		// Description.
 		$settings['description'] = array(
 			'name'           => 'pronamic_pay_description',
 			'type'           => 'textbox',
-			'group'          => 'primary',
+			'group'          => 'pronamic_pay',
 			'label'          => __( 'Transaction Description', 'pronamic_ideal' ),
 			'placeholder'    => '',
 			'value'          => '',
@@ -183,6 +231,15 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 		/*
 		 * Status pages.
 		 */
+		$settings['pronamic_pay_status_pages'] = array(
+			'name'     => 'pronamic_pay_status_pages',
+			'type'     => 'fieldset',
+			'label'    => __( 'Payment Status Pages', 'pronamic_ideal' ),
+			'width'    => 'full',
+			'group'    => 'pronamic_pay',
+			'settings' => array(),
+		);
+
 		$options = array(
 			array(
 				'label' => __( '— Select —', 'pronamic_ideal' ),
@@ -198,10 +255,10 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 
 		// Add settings fields.
 		foreach ( \pronamic_pay_plugin()->get_pages() as $id => $label ) {
-			$settings[ $id ] = array(
+			$settings['pronamic_pay_status_pages']['settings'][] = array(
 				'name'        => $id,
 				'type'        => 'select',
-				'group'       => 'pronamic_pay_status_pages',
+				'group'       => 'pronamic_pay',
 				'label'       => $label,
 				'placeholder' => '',
 				'value'       => '',
