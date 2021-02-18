@@ -98,6 +98,12 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 			$payment->description
 		);
 
+		// Customer.
+		$payment->set_customer( NinjaFormsHelper::get_customer( $action_settings ) );
+
+		// Address.
+		$payment->set_billing_address( NinjaFormsHelper::get_address( $action_settings ) );
+
 		// Currency.
 		$currency = Currency::get_instance( NinjaFormsHelper::get_currency_from_form_id( $form_id ) );
 
@@ -112,6 +118,18 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 
 		// Configuration.
 		$payment->config_id = $config_id;
+
+		// Subscription
+		$subscription = NinjaFormsHelper::get_subscription( $action_settings, $data, $payment->description, $payment->get_total_amount() );
+		if ( isset( $subscription ) ) {
+			$subscription->description = $payment->get_description();
+			$period                    = $subscription->new_period();
+			if ( null !== $period ) {
+				$payment->add_period( $period );
+			}
+			$payment->subscription_source_id = $payment->source_id;
+			$payment->subscription           = $subscription;
+		}
 
 		// Set default payment method if necessary.
 		if ( empty( $payment->method ) && ( null !== $payment->issuer || $gateway->payment_method_is_required() ) ) {
@@ -155,14 +173,7 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 	 * @return array
 	 */
 	public function action_settings() {
-		$settings        = array();
-		$payment_configs = Plugin::get_config_select_options();
-		foreach ( $payment_configs as $key => $payment_config ) {
-			$payment_config_options[] = array(
-				'label' => $payment_config,
-				'value' => $key,
-			);
-		}
+		$settings = array();
 
 		// Configuration.
 		$settings['config_id'] = array(
@@ -197,18 +208,6 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 				'include' => array(
 					'calcs',
 				),
-			),
-		);
-
-		$settings['knit_pay_config_id'] = array(
-			'name'    => 'knit_pay_config_id',
-			'type'    => 'select',
-			'group'   => 'primary',
-			'label'   => __( 'Configuration', 'pronamic_ideal' ),
-			'options' => $payment_config_options,
-			'default' => get_option( 'pronamic_pay_config_id' ),
-			'deps'    => array(
-				'payment_gateways' => 'pronamic_pay',
 			),
 		);
 

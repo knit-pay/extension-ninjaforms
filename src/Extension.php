@@ -170,7 +170,7 @@ class Extension extends AbstractPluginIntegration {
 	public function register_settings_groups( $groups ) {
 		$groups['pronamic_pay'] = array(
 			'id'       => 'pronamic_pay',
-			'label'    => __( 'Pronamic Pay', 'pronamic_ideal' ),
+			'label'    => __( 'Knit Pay', 'pronamic_ideal' ),
 			'priority' => 200,
 		);
 

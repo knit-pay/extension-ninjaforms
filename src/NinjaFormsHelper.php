@@ -10,6 +10,16 @@
 
 namespace Pronamic\WordPress\Pay\Extensions\NinjaForms;
 
+use Pronamic\WordPress\Pay\Address;
+use Pronamic\WordPress\Pay\AddressHelper;
+use Pronamic\WordPress\Pay\ContactName;
+use Pronamic\WordPress\Pay\ContactNameHelper;
+use Pronamic\WordPress\Pay\CustomerHelper;
+use Pronamic\WordPress\Pay\Subscriptions\Subscription;
+use Pronamic\WordPress\Pay\Subscriptions\SubscriptionInterval;
+use Pronamic\WordPress\Pay\Subscriptions\SubscriptionPhase;
+use Pronamic\WordPress\Pay\Core\Util;
+
 /**
  * Ninja Forms Helper
  *
@@ -77,6 +87,11 @@ class NinjaFormsHelper {
 		}
 
 		if ( empty( $config_id ) ) {
+			// TODO: Remove this if block after few months, better to check if we can update it.
+			if ( ! empty( $action_settings['knit_pay_config_id'] ) ) {
+				return $action_settings['knit_pay_config_id'];
+			}
+
 			$config_id = \get_option( 'pronamic_pay_config_id' );
 		}
 
@@ -182,5 +197,121 @@ class NinjaFormsHelper {
 		}
 
 		return \get_permalink( $page_id );
+	}
+
+	/**
+	 * Get value from array.
+	 *
+	 * @param array  $array Array.
+	 * @param string $key   Key.
+	 * @return string|null
+	 */
+	private static function get_value_from_array( $array, $key ) {
+		if ( ! array_key_exists( $key, $array ) ) {
+			return null;
+		}
+
+		return $array[ $key ];
+	}
+
+	/**
+	 * Get customer from order.
+	 */
+	public static function get_customer( $action_settings ) {
+		return CustomerHelper::from_array(
+			array(
+				'name'    => self::get_name( $action_settings ),
+				'email'   => self::get_value_from_array( $action_settings, 'knit_pay_email' ),
+				'phone'   => self::get_value_from_array( $action_settings, 'knit_pay_phone' ),
+				'user_id' => null,
+			)
+		);
+	}
+
+	/**
+	 * Get name from order.
+	 *
+	 * @return ContactName|null
+	 */
+	public static function get_name( $action_settings ) {
+		return ContactNameHelper::from_array(
+			array(
+				'first_name' => self::get_value_from_array( $action_settings, 'knit_pay_fname' ),
+				'last_name'  => self::get_value_from_array( $action_settings, 'knit_pay_lname' ),
+			)
+		);
+	}
+
+	/**
+	 * Get address from order.
+	 *
+	 * @return Address|null
+	 */
+	public static function get_address( $action_settings ) {
+
+		return AddressHelper::from_array(
+			array(
+				'name'         => self::get_name( $action_settings ),
+				'line_1'       => self::get_value_from_array( $action_settings, 'knit_pay_address' ),
+				'line_2'       => null,
+				'postal_code'  => self::get_value_from_array( $action_settings, 'knit_pay_zip' ),
+				'city'         => self::get_value_from_array( $action_settings, 'knit_pay_city' ),
+				'region'       => self::get_value_from_array( $action_settings, 'knit_pay_state' ),
+				'country_code' => self::get_value_from_array( $action_settings, 'knit_pay_country' ),
+				'email'        => self::get_value_from_array( $action_settings, 'knit_pay_email' ),
+				'phone'        => self::get_value_from_array( $action_settings, 'knit_pay_phone' ),
+			)
+		);
+	}
+
+	/**
+	 * Get subscription.
+	 *
+	 * @since 2.3.2
+	 * @return Subscription|null
+	 */
+	public static function get_subscription( $action_settings, $data, $description, $amount ) {
+		if ( empty( $action_settings['knit_pay_frequency'] ) || empty( $action_settings['knit_pay_interval'] ) ) {
+			return;
+		}
+
+		$interval_period = self::get_value_from_array( $action_settings, 'knit_pay_interval_period' );
+		$interval        = self::get_value_from_array( $action_settings, 'knit_pay_interval' );
+		$frequency       = self::get_value_from_array( $action_settings, 'knit_pay_frequency' );
+
+		if ( empty( $interval_period ) ) {
+			foreach ( $data['fields'] as $field ) {
+				if ( 'knit_pay_recurring_interval_period' !== $field['type'] ) {
+					continue;
+				}
+
+				$interval_period = $field['value'];
+
+				if ( empty( $interval_period ) ) {
+					return;
+				}
+				break;
+			}
+			return;
+		}
+
+		// Subscription.
+		$subscription = new Subscription();
+
+		$subscription->description = $description;
+
+		// Phase.
+		$phase = new SubscriptionPhase(
+			$subscription,
+			new \DateTimeImmutable(),
+			new SubscriptionInterval( 'P' . $interval . Util::to_period( $interval_period ) ),
+			$amount
+		);
+
+		$phase->set_total_periods( $frequency );
+
+		$subscription->add_phase( $phase );
+
+		return $subscription;
 	}
 }
