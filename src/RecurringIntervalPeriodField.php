@@ -3,7 +3,7 @@
  * Subscription Frequency field
  *
  * @author    Knit Pay
- * @copyright 2020 Knit Pay
+ * @copyright 2020-2021 Knit Pay
  * @license   GPL-3.0-or-later
  * @package   Pronamic\WordPress\Pay\Extensions\NinjaForms
  */
