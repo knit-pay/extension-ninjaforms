@@ -153,6 +153,11 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 			$payment->set_meta( 'ninjaforms_payment_action_id', $action_settings['id'] );
 			$payment->set_meta( 'ninjaforms_payment_form_id', $form_id );
 
+			// Update Knit Pay payment status before redirecting.
+			$submission = Ninja_Forms()->form( $form_id )->sub( $payment->get_order_id() )->get();
+			$submission->update_extra_value( 'knit_pay_status', $payment->status );
+			$submission->save();
+
 			// Save session cookie in payment meta for processing delayed actions.
 			\Ninja_Forms()->session()->set( 'pronamic_payment_id', $payment->get_id() );
 

@@ -193,7 +193,7 @@ class Extension extends AbstractPluginIntegration {
 		return $groups;
 	}
 
-	public function status_update( Payment $payment ) {
+	public function update_submission_payment_status( Payment $payment ) {
 		$form_id = $payment->get_meta( 'ninjaforms_payment_form_id' );
 
 		if ( empty( $form_id ) ) {
@@ -222,6 +222,9 @@ class Extension extends AbstractPluginIntegration {
 
 				break;
 		}
+
+		//Update Payment Status in Submission.
+		$this->update_submission_payment_status( $payment );
 	}
 
 	/**
