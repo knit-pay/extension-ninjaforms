@@ -248,6 +248,10 @@ class NinjaFormsHelper {
 	 * @return Address|null
 	 */
 	public static function get_address( $action_settings ) {
+		$country = self::get_value_from_array( $action_settings, 'knit_pay_country' );
+		if ( ! empty( $country ) && 2 !== strlen( $country ) ) {
+			$country = '';
+		}
 
 		return AddressHelper::from_array(
 			array(
@@ -257,7 +261,7 @@ class NinjaFormsHelper {
 				'postal_code'  => self::get_value_from_array( $action_settings, 'knit_pay_zip' ),
 				'city'         => self::get_value_from_array( $action_settings, 'knit_pay_city' ),
 				'region'       => self::get_value_from_array( $action_settings, 'knit_pay_state' ),
-				'country_code' => self::get_value_from_array( $action_settings, 'knit_pay_country' ),
+				'country_code' => $country,
 				'email'        => self::get_value_from_array( $action_settings, 'knit_pay_email' ),
 				'phone'        => self::get_value_from_array( $action_settings, 'knit_pay_phone' ),
 			)
