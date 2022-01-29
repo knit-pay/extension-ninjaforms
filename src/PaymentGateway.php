@@ -133,7 +133,7 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 		// Subscription
 		$subscription = NinjaFormsHelper::get_subscription( $action_settings, $data, $payment->description, $payment->get_total_amount() );
 		if ( isset( $subscription ) ) {
-			$subscription->description = $payment->get_description();
+			$subscription->set_description( $payment->get_description() );
 			$period                    = $subscription->new_period();
 			if ( null !== $period ) {
 				$payment->add_period( $period );
