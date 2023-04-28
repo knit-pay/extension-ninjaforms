@@ -3,7 +3,7 @@
  * Extension
  *
  * @author    Pronamic <info@pronamic.eu>
- * @copyright 2005-2022 Pronamic
+ * @copyright 2005-2023 Pronamic
  * @license   GPL-3.0-or-later
  * @package   Pronamic\WordPress\Pay\Extensions\NinjaForms
  */
@@ -261,7 +261,7 @@ class Extension extends AbstractPluginIntegration {
 		$session_cookie_temp = null;
 
 		if ( \array_key_exists( $wp_session_cookie, $_COOKIE ) ) {
-			$session_cookie_temp = filter_var( \wp_unslash( $_COOKIE[ $wp_session_cookie ] ), \FILTER_SANITIZE_STRING );
+			$session_cookie_temp = \sanitize_text_field( \wp_unslash( $_COOKIE[ $wp_session_cookie ] ) );
 		}
 
 		$_COOKIE[ $wp_session_cookie ] = $session_cookie;

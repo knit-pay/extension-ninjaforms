@@ -3,7 +3,7 @@
  * Payment gateway
  *
  * @author    Pronamic <info@pronamic.eu>
- * @copyright 2005-2022 Pronamic
+ * @copyright 2005-2023 Pronamic
  * @license   GPL-3.0-or-later
  * @package   Pronamic\WordPress\Pay\Extensions\NinjaForms
  */
@@ -292,7 +292,17 @@ final class PaymentGateway extends NF_Abstracts_PaymentGateway {
 		}
 
 		// Add settings fields.
-		foreach ( \pronamic_pay_plugin()->get_pages() as $id => $label ) {
+		$pages = [
+			'completed' => \__( 'Completed', 'pronamic_ideal' ),
+			'cancel'    => \__( 'Canceled', 'pronamic_ideal' ),
+			'expired'   => \__( 'Expired', 'pronamic_ideal' ),
+			'error'     => \__( 'Error', 'pronamic_ideal' ),
+			'unknown'   => \__( 'Unknown', 'pronamic_ideal' ),
+		];
+
+		foreach ( $pages as $key => $label ) {
+			$id = \sprintf( 'pronamic_pay_%s_page_id', $key );
+
 			$settings['pronamic_pay_status_pages']['settings'][] = [
 				'name'        => $id,
 				'type'        => 'select',

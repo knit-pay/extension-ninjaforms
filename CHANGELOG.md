@@ -7,6 +7,43 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 ## [Unreleased][unreleased]
 -
 
+## [3.2.2] - 2023-03-27
+
+### Commits
+
+- Set Composer type to WordPress plugin. ([159c033](https://github.com/pronamic/wp-pronamic-pay-ninjaforms/commit/159c033491ae296a8bb6f13f19a413fbb589ba90))
+- No longer use `\pronamic_pay_plugin()->get_pages()`. ([794a80f](https://github.com/pronamic/wp-pronamic-pay-ninjaforms/commit/794a80f1b1f908f7fa20a5908678f3bc4d125d8d))
+- Created .gitattributes ([726c751](https://github.com/pronamic/wp-pronamic-pay-ninjaforms/commit/726c751d0379744074b2b328f023fd04a215bc5c))
+- Requires PHP: 7.4. ([1c0fff0](https://github.com/pronamic/wp-pronamic-pay-ninjaforms/commit/1c0fff0762cdd8caddb01ee3473a6e507aa8902b))
+
+Full set of changes: [`3.2.1...3.2.2`][3.2.2]
+
+[3.2.2]: https://github.com/pronamic/wp-pronamic-pay-ninjaforms/compare/v3.2.1...v3.2.2
+
+## [3.2.1] - 2023-01-31
+### Composer
+
+- Changed `php` from `>=8.0` to `>=7.4`.
+Full set of changes: [`3.2.0...3.2.1`][3.2.1]
+
+[3.2.1]: https://github.com/pronamic/wp-pronamic-pay-ninjaforms/compare/v3.2.0...v3.2.1
+
+## [3.2.0] - 2022-12-23
+
+### Commits
+
+- Added "Requires Plugins" header. ([11eb54d](https://github.com/pronamic/wp-pronamic-pay-ninjaforms/commit/11eb54d579dfe39caa0cbf0fbc3c0031717f7d1c))
+- No longer use deprecated `FILTER_SANITIZE_STRING`. ([9f926c4](https://github.com/pronamic/wp-pronamic-pay-ninjaforms/commit/9f926c4e265408c563c1548ca2007dd7be5c2536))
+
+### Composer
+
+- Changed `php` from `>=5.6.20` to `>=8.0`.
+- Changed `wp-pay/core` from `^4.4` to `v4.6.0`.
+	Release notes: https://github.com/pronamic/wp-pay-core/releases/tag/v3.1.1
+Full set of changes: [`3.1.1...3.2.0`][3.2.0]
+
+[3.2.0]: https://github.com/pronamic/wp-pronamic-pay-ninjaforms/compare/v3.1.1...v3.2.0
+
 ## [3.1.1] - 2022-09-27
 - Update to `wp-pay/core` version `^4.4`.
 
