@@ -19,6 +19,8 @@ use Pronamic\WordPress\Pay\Plugin;
  *
  * @version 1.0.1
  * @since   1.0.0
+ * @phpstan-type Option          array{label: string, value: string, calc: string, selected: int, order: int}
+ * @phpstan-type SettingsOptions array{value: array<int, Option>, columns: array<string, string>}
  */
 class PaymentMethodsField extends NF_Abstracts_List {
 
@@ -67,6 +69,7 @@ class PaymentMethodsField extends NF_Abstracts_List {
 	/**
 	 * Old classname for earlier versions.
 	 *
+	 * @override
 	 * @var string
 	 */
 	protected $_old_classname = 'list-select';
@@ -74,7 +77,7 @@ class PaymentMethodsField extends NF_Abstracts_List {
 	/**
 	 * Settings.
 	 *
-	 * @var array
+	 * @var array{options?: SettingsOptions}
 	 */
 	protected $_settings = [];
 
@@ -99,7 +102,7 @@ class PaymentMethodsField extends NF_Abstracts_List {
 	/**
 	 * Get default Pronamic payment method options.
 	 *
-	 * @return array
+	 * @return array<int, Option>
 	 */
 	private function get_pronamic_payment_method_options() {
 		$options = [];
@@ -118,7 +121,7 @@ class PaymentMethodsField extends NF_Abstracts_List {
 				'order'    => $order,
 			];
 
-			$order++;
+			++$order;
 		}
 
 		return $options;
@@ -128,8 +131,7 @@ class PaymentMethodsField extends NF_Abstracts_List {
 	 * Render options.
 	 *
 	 * @param array $options Options.
-	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function render_options( $options ) {
 		foreach ( $options as &$option ) {
@@ -144,7 +146,7 @@ class PaymentMethodsField extends NF_Abstracts_List {
 	/**
 	 * Get gateway available payment methods.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	private function get_pronamic_gateway_payment_methods() {
 		$form_id = \filter_input( \INPUT_GET, 'form_id', \FILTER_SANITIZE_NUMBER_INT );

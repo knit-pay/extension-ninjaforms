@@ -7,6 +7,42 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 ## [Unreleased][unreleased]
 -
 
+## [3.3.2] - 2024-03-26
+
+### Commits
+
+- Fixed “Missing script: ‘login’” on `npm start`. ([c606ac5](https://github.com/pronamic/wp-pronamic-pay-ninjaforms/commit/c606ac5cdf9d5b8589539279b2a6f33fc3b64e79))
+
+### Composer
+
+- Changed `php` from `>=7.4` to `>=8.0`.
+- Changed `wp-pay/core` from `^4.6` to `v4.16.0`.
+	Release notes: https://github.com/pronamic/wp-pay-core/releases/tag/v4.16.0
+
+Full set of changes: [`3.3.1...3.3.2`][3.3.2]
+
+[3.3.2]: https://github.com/pronamic/wp-pronamic-pay-ninjaforms/compare/v3.3.1...v3.3.2
+
+## [3.3.1] - 2024-02-13
+
+### Changed
+
+- No longer allow direct file access to plugin file. [pronamic/pronamic-pay-with-mollie-for-ninja-forms#2](https://github.com/pronamic/pronamic-pay-with-mollie-for-ninja-forms/issues/2)
+
+Full set of changes: [`3.3.0...3.3.1`][3.3.1]
+
+[3.3.1]: https://github.com/pronamic/wp-pronamic-pay-ninjaforms/compare/v3.3.0...v3.3.1
+
+## [3.3.0] - 2024-02-07
+
+### Changed
+
+- The code further complies with (WordPress) coding standards.
+
+Full set of changes: [`3.2.4...3.3.0`][3.3.0]
+
+[3.3.0]: https://github.com/pronamic/wp-pronamic-pay-ninjaforms/compare/v3.2.4...v3.3.0
+
 ## [3.2.4] - 2023-10-13
 
 ### Commits
