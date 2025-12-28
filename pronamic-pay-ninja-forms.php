@@ -4,7 +4,7 @@
  * Plugin URI: https://www.pronamic.eu/plugins/pronamic-pay-ninja-forms/
  * Description: Extend the Pronamic Pay plugin with Ninja Forms support to receive payments through a variety of payment providers.
  *
- * Version: 3.3.2
+ * Version: 3.3.3
  * Requires at least: 4.7
  * Requires PHP: 7.4
  *
@@ -22,7 +22,7 @@
  * GitHub URI: https://github.com/pronamic/wp-pronamic-pay-ninja-forms
  *
  * @author    Pronamic <info@pronamic.eu>
- * @copyright 2005-2023 Pronamic
+ * @copyright 2005-2024 Pronamic
  * @license   GPL-3.0-or-later
  * @package   Pronamic\WordPress\Pay\Extensions\NinjaForms
  */
