@@ -7,6 +7,16 @@ This projects adheres to [Semantic Versioning](http://semver.org/) and [Keep a C
 ## [Unreleased][unreleased]
 -
 
+## [3.3.4] - 2025-11-11
+
+### Commits
+
+- Added this point we shoud not use translation functions. ([42f2417](https://github.com/pronamic/wp-pronamic-pay-ninjaforms/commit/42f2417dc4a9db2e77c5639379dacd6b6ff363d9))
+
+Full set of changes: [`3.3.3...3.3.4`][3.3.4]
+
+[3.3.4]: https://github.com/pronamic/wp-pronamic-pay-ninjaforms/compare/v3.3.3...v3.3.4
+
 ## [3.3.3] - 2024-12-17
 
 ### Commits
